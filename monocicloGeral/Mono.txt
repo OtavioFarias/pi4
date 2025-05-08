@@ -1,0 +1,2 @@
+Implementação RISCV monociclo para entender a arquitetura
+Ainda precisa revisarm jump e extensores de bits
