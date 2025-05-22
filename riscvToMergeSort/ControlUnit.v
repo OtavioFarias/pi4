@@ -1,6 +1,6 @@
 module ControlUnit(
     input  [31:0] inst,
-    output reg EscReg, EscMem, ulaImm, jump, Branch, lui, auiPc, jalr,
+    output reg EscReg, EscMem, ulaImm, jump, Branch, lui, auiPc, jalr, lw,
     output reg [2:0] aluControl
 );
 
@@ -15,6 +15,7 @@ always @(*) begin
     aluControl  = 'b000;
     auiPc       = 0;
     jalr        = 0;
+    lw          = 0;
 
     case (inst[6:0])
 
@@ -29,6 +30,7 @@ always @(*) begin
             aluControl = inst[14:12];
             auiPc = 0;
             jalr = 0;
+            lw = 0;
 
         end
 
@@ -40,10 +42,11 @@ always @(*) begin
             ulaImm = 0; //#
             jump = 0;
             Branch = 0;
-            lui = 1;
+            lui = 0;
             aluControl = 000;
-            auiPc = 0;
+            auiPc = 1;
             jalr = 0;
+            lw = 0;
 
         end
 
@@ -56,6 +59,7 @@ always @(*) begin
             lui = 0;
             auiPc = 0;
             jalr = 0;
+            lw = 0;
 
         end
 
@@ -67,10 +71,11 @@ always @(*) begin
             ulaImm = 0; //#
             jump = 0;
             Branch = 0;
-            lui = 1;
-            aluControl = 000;
+            lui = 0;
+            aluControl = inst[14:12];
             auiPc = 0;
-            jalr = 0;
+            jalr = 1;
+            lw = 0;
 
         end
         7'b100011: begin
@@ -82,9 +87,10 @@ always @(*) begin
             jump = 0;
             Branch = 0;
             lui = 0;
-            aluControl = 000;;
+            aluControl = 000;
             auiPc = 0;
             jalr = 0;
+            lw = 0;
 
         end
 
@@ -100,6 +106,7 @@ always @(*) begin
             jalr = 0;
             Branch = 1;
             aluControl = 3'b010;
+            lw = 0;
 
         end
 
@@ -115,6 +122,7 @@ always @(*) begin
             aluControl = 000;
             auiPc = 0;
             jalr = 0;
+            lw = 1;
 
         end
 
@@ -130,6 +138,7 @@ always @(*) begin
             aluControl = inst[14:12];
             auiPc = 0;
             jalr = 0;
+            lw = 0;
 
         end
 
@@ -144,7 +153,7 @@ always @(*) begin
             lui = 1;
             auiPc = 0;
             jalr = 0;
-
+            lw = 0;
 
         end
     endcase

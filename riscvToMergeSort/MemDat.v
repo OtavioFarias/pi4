@@ -1,6 +1,7 @@
 module MemDat(
     input [31:0] value,       // valor de entrada (8 bits)
     input esc_mem,           // sinal de controle para escrita em memória
+    input read_mem,
     input [31:0] dst_mem,     // endereço de destino para escrita
     output [31:0] out_dat,  // saída de dados (8 bits)
     input clock

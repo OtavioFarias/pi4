@@ -7,7 +7,7 @@ module Top(
 
     reg [31:0]pc;
     wire [31:0]inst;
-    wire EscReg, EscMem, ulaImm, lui, jump, Branch, auiPc, jalr;
+    wire EscReg, EscMem, ulaImm, lui, jump, Branch, auiPc, jalr, lw;
     wire jumpTaked;
     wire [31:0] muxAluB, muxAluA, muxMemToReg, imm, rs1, rs2, outAlu, outMem, valueMem                                    ;
     wire [31:0]newPC;
@@ -16,8 +16,8 @@ module Top(
 
 Alu ALU(
 
-    .inputA(rs1),
-    .inputB(rs2),
+    .inputA(muxAluA),
+    .inputB(muxAluB),
     .out(outAlu),
     .control(aluControl)
 
@@ -33,8 +33,9 @@ ControlUnit UC(
     .Branch(Branch),
     .aluControl(aluControl),
     .auiPc(auiPc),
-    .jalr(jalr)
-
+    .jalr(jalr),
+    .lw(lw),
+    .ulaImm(ulaImm)
     );
 
 ImmDecode DI(
@@ -56,6 +57,7 @@ MemDat MemDat(
     .value(rs2),
     .esc_mem(EscMem),
     .dst_mem(outAlu),
+    .read_mem(lw),
     .out_dat(outMem),
     .clock(clock)
 
@@ -76,12 +78,12 @@ RegisterBank Regs(
     );
 
     assign muxAluB = (ulaImm == 0) ? imm : rs2;
-    assign muxAluA = (jalr == 0) ? rs1 : pc;
-    assign muxMemToReg = (EscReg == 0) ? (lui == 0) ? outAlu : imm : outMem; //revisar um sinal para colocar aqui, lidar com lw
+    assign muxAluA = (auiPc == 0) ? rs1 : pc;
+    assign muxMemToReg = (lw == 0) ? (lui == 0) ? (jumpTaked == 0) ? outAlu : (pc + 1) : imm : outMem;
 
     assign jumpTaked = (Branch & outAlu != 64'b0) || (jump | jalr);
 
-    assign newPC = (jumpTaked == 0) ? (pc + 1) : (jump == 0) ? imm : (jalr == 0) ? imm + pc : outAlu;
+    assign newPC = (jumpTaked == 0) ? (pc + 1) : (jump == 1) ? imm : (jalr == 0) ? imm + pc  : outAlu;
 
     always @(posedge clock, posedge reset)
     begin

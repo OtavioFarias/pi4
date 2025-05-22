@@ -12,9 +12,9 @@ module RegisterBank(
 
 );
 
-    reg [63:0]reg1, reg2, reg3, reg4, reg5, reg6, reg7, reg8, reg9, reg10, reg11, reg12, reg13, reg14, reg15, reg16, reg17, reg18, reg19, reg20, reg21, reg22, reg23, reg24, reg25, reg26, reg27, reg28, reg29, reg30, reg31;
+    reg [31:0]reg1, reg2, reg3, reg4, reg5, reg6, reg7, reg8, reg9, reg10, reg11, reg12, reg13, reg14, reg15, reg16, reg17, reg18, reg19, reg20, reg21, reg22, reg23, reg24, reg25, reg26, reg27, reg28, reg29, reg30, reg31;
 
-    assign outReg1 = rs1 == 5'b00000 ? 64'b0 :
+    assign outReg1 = rs1 == 5'b00000 ? 32'b0 :
                      rs1 == 5'b00001 ? reg1 :
                      rs1 == 5'b00010 ? reg2 :
                      rs1 == 5'b00011 ? reg3 :
@@ -47,7 +47,7 @@ module RegisterBank(
                      rs1 == 5'b11110 ? reg30 :
                                        reg31;
 
-    assign outReg2 = rs2 == 5'b00000 ? 64'b0 :
+    assign outReg2 = rs2 == 5'b00000 ? 32'b0 :
                      rs2 == 5'b00001 ? reg1 :
                      rs2 == 5'b00010 ? reg2 :
                      rs2 == 5'b00011 ? reg3 :
@@ -121,7 +121,7 @@ always @(posedge clock, posedge reset)
     end else
         begin
 
-        if(regWrite == 1)
+        if(regWrite == 0)
             begin
 
             case(rd)

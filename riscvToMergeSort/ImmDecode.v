@@ -24,7 +24,7 @@ always @(*)begin
 
         7'b10111: begin
             // AUIPC
-            imm = {12'b0, inst[31:12]};
+            imm = {inst[31:12], 12'b0};
 
         end
 
