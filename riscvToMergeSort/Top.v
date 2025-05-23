@@ -79,17 +79,17 @@ RegisterBank Regs(
 
     assign muxAluB = (ulaImm == 0) ? imm : rs2;
     assign muxAluA = (auiPc == 0) ? rs1 : pc;
-    assign muxMemToReg = (lw == 0) ? (lui == 0) ? (jumpTaked == 0) ? outAlu : (pc + 1) : imm : outMem;
+    assign muxMemToReg = (lw == 0) ? (lui == 0) ? (jumpTaked == 0) ? outAlu : (pc + 4) : imm : outMem;
 
-    assign jumpTaked = (Branch & outAlu != 64'b0) || (jump | jalr);
+    assign jumpTaked = (Branch & outAlu != 32'b0) || (jump | jalr);
 
-    assign newPC = (jumpTaked == 0) ? (pc + 1) : (jump == 1) ? imm : (jalr == 0) ? imm + pc  : outAlu;
+    assign newPC = (jumpTaked == 0) ? (pc + 4) : (jump == 1) ? imm : (jalr == 0) ? imm + pc : {outAlu[31:1], 1'b0};
 
     always @(posedge clock, posedge reset)
     begin
         if(reset) begin
 
-            pc <=64'b0;
+            pc <=32'b0;
 
         end
 
