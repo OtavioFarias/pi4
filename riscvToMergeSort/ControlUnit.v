@@ -142,7 +142,7 @@ always @(*) begin
 
         end
 
-        default: begin
+        7'b110111: begin
             // LUI
 
             EscReg = 0; //#
@@ -152,6 +152,18 @@ always @(*) begin
             Branch = 0;
             lui = 1;
             auiPc = 0;
+            jalr = 0;
+            lw = 0;
+
+        end
+
+        default: begin
+            // nop
+
+            EscReg = 1; //#
+            EscMem = 0;
+            jump = 0;
+            Branch = 0;
             jalr = 0;
             lw = 0;
 
