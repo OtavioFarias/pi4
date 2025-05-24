@@ -8,14 +8,14 @@ module ID_EX(
     output reg [31:0] rs1Out, rs2Out, immOut, pcOut, pcAdd4Out,
     output reg [4:0] rdOut,
     output reg EscRegOut, EscMemOut, ulaImmOut, jumpOut, BranchOut, luiOut, auiPcOut, jalrOut, lwOut,
-    output reg [2:0] aluControlOut
-
+    output reg [2:0] aluControlOut,
+    input stall
 );
 
-always @(posedge clk, posedge reset)
+always @(posedge clk, posedge reset, posedge stall)
 
     begin
-    if (reset)
+    if (reset | stall)
         begin
 
         rs1Out <= 32'b0;

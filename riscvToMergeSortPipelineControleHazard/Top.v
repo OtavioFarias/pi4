@@ -41,7 +41,8 @@ IF_ID if_id(
     .inst(inst),
     .pcOut(pcID),
     .pcAdd4Out(pcAdd4ID),
-    .instOut(instID)
+    .instOut(instID),
+    .stall(jumpTaked)
 
 );
 
@@ -80,7 +81,8 @@ ID_EX id_ex(
     .auiPcOut(auiPcEX),
     .jalrOut(jalrEX),
     .lwOut(lwEX),
-    .aluControlOut(aluControlEX)
+    .aluControlOut(aluControlEX),
+    .stall(jumpTaked)
 
 );
 
@@ -111,7 +113,8 @@ EX_MEM ex_mem(
     .BranchOut(BranchMEM),
     .jalrOut(jalrMEM),
     .lwOut(lwMEM),
-    .immOut(immMEM)
+    .immOut(immMEM),
+    .stall(jumpTaked)
 
 );
 
@@ -169,7 +172,8 @@ MemInst MemInst(
 
     .pc(pc),
     .out_inst(inst),
-    .clock(clock)
+    .clock(clock),
+    .stall(jumpTaked)
 
     );
 MemDat MemDat(

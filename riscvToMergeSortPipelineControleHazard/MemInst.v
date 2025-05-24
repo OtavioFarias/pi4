@@ -1,11 +1,12 @@
 module MemInst(
     input [31:0] pc,          // endereço de instrução (program counter)
-    output [31:0] out_inst,   // saída de instrução (16 bits)
-    input clock
+    output reg [31:0] out_inst,   // saída de instrução (16 bits)
+    input clock,
+    input stall
 );
 
 
-    // Memória de instruções (256 posições, 16 bits cada)
+    // Memória de instruções (256 posições, 8 bits cada)
     reg [7:0] inst [0:255];
 
     // Inicialização das memórias
@@ -75,31 +76,36 @@ module MemInst(
     inst[31] = 8'b00000000;
     */
 
-        // addi 2 0 1
-    inst[0] = 8'b00000000;
-    inst[1] = 8'b00010000;
-    inst[2] = 8'b00000001;
-    inst[3] = 8'b00010011;
-    // addi 3 0 2
-    inst[4] = 8'b00000000;
-    inst[5] = 8'b00100000;
-    inst[6] = 8'b00000001;
-    inst[7] = 8'b10010011;
-    // add 1 3 2
-    inst[8] = 8'b00000000;
-    inst[9] = 8'b00110001;
-    inst[10] = 8'b00000000;
-    inst[11] = 8'b10110011;
-    // add 4 3 2
-    inst[12] = 8'b00000000;
-    inst[13] = 8'b00110001;
-    inst[14] = 8'b00000010;
-    inst[15] = 8'b00110011;
-    // add 5 3 2
-    inst[16] = 8'b00000000;
-    inst[17] = 8'b00110001;
-    inst[18] = 8'b00000010;
-    inst[19] = 8'b10110011;
+    // jal test
+inst[0] = 8'b11111000;
+inst[1] = 8'b00000000;
+inst[2] = 8'b00011111;
+inst[3] = 8'b11101111;
+// addi 2 0 1
+inst[4] = 8'b00000000;
+inst[5] = 8'b00010000;
+inst[6] = 8'b00000001;
+inst[7] = 8'b00010011;
+// addi 3 0 2
+inst[8] = 8'b00000000;
+inst[9] = 8'b00100000;
+inst[10] = 8'b00000001;
+inst[11] = 8'b10010011;
+// add 1 3 2
+inst[12] = 8'b00000000;
+inst[13] = 8'b00110001;
+inst[14] = 8'b00000000;
+inst[15] = 8'b10110011;
+// add 4 3 2
+inst[16] = 8'b00000000;
+inst[17] = 8'b00110001;
+inst[18] = 8'b00000010;
+inst[19] = 8'b00110011;
+// add 5 3 2
+inst[20] = 8'b00000000;
+inst[21] = 8'b00110001;
+inst[22] = 8'b00000010;
+inst[23] = 8'b10110011;
     /*
     //jal 32 11111
     inst[16] = 8'b00000000;
@@ -321,6 +327,15 @@ module MemInst(
         // ... (inicialize o restante das instruções com 0)
     end
 
-    assign out_inst = {inst[pc], inst[pc+1], inst[pc+2], inst[pc+3]};     // Saída de instrução
+    always @(posedge clock, posedge stall)
+
+    begin
+    if (stall)
+        begin
+        out_inst <= 32'b0;
+        end
+    else
+        out_inst <= {inst[pc], inst[pc+1], inst[pc+2], inst[pc+3]};     // Saída de instrução
+    end
 
 endmodule

@@ -6,14 +6,15 @@ module EX_MEM(
     input EscReg, EscMem, jump, Branch, jalr, lw,
     output reg [31:0] rs2Out, immPcOut, pcAdd4Out, outAluOut, immOut,
     output reg [4:0] rdOut,
-    output reg EscRegOut, EscMemOut, jumpOut, BranchOut, jalrOut, lwOut
+    output reg EscRegOut, EscMemOut, jumpOut, BranchOut, jalrOut, lwOut,
+    input stall
 
 );
 
 always @(posedge clk, posedge reset)
 
     begin
-    if (reset)
+    if (reset | stall)
         begin
 
         rs2Out <= 32'b0;
