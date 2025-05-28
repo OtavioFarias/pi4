@@ -25,7 +25,7 @@ module tb_top;
     reset = 0;
 
     // Roda a simulação por mais 200ns
-    #2000;
+    #600000;
 
     // Finaliza a simulação
     $finish;

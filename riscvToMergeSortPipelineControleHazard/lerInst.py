@@ -30,6 +30,6 @@ def process_file(input_path, output_path):
         outfile.write('\n'.join(inst_lines))
 
 # Exemplo de uso
-input_txt = 'instrucoes.txt'   # Seu arquivo de entrada
+input_txt = 'inst32.txt'   # Seu arquivo de entrada
 output_txt = 'instrucoesFormatadas.txt' # Arquivo que será gerado
 process_file(input_txt, output_txt)

@@ -17,7 +17,7 @@ always @(*)begin
 
         7'b1100111: begin
             // JALR
-            imm = {20'b0, inst[31:20]};
+            imm = {{20{inst[31]}}, inst[31:20]};
 
         end
 
@@ -30,30 +30,30 @@ always @(*)begin
 
         7'b1101111: begin
             // JAL
-            imm = {11'b0, inst[31], inst[20], inst[19:12], inst[30:21]};
+            imm = {{12{inst[31]}}, inst[19:12], inst[20], inst[30:21], 1'b0};
 
         end
         7'b100011: begin
             // SW
-            imm = {52'b0, inst[31:25], inst[11:7]};
+            imm = {{20{inst[31]}}, inst[31:25], inst[11:7]};
 
         end
 
         7'b1100011: begin
             // BLT
-            imm = {47'b0, inst[31], inst[7], inst[30:25], inst[11:8]};
+            imm = {{20{inst[31]}}, inst[7], inst[30:25], inst[11:8], 1'b0};
 
         end
 
         7'b10011: begin
             //                          SLLI                              SRLI, SRAI                              ADDI, SLTI
-            imm = (inst[14:12] == 001) ? {59'b0, inst[24:20]} : (inst[14:12] == 101) ? {59'b0, inst[24:20]} : {{52{inst[31]}}, inst[31:20]};
+            imm = (inst[14:12] == 001) ? {27'b0, inst[24:20]} : (inst[14:12] == 101) ? {27'b0, inst[24:20]} : {{20{inst[31]}}, inst[31:20]};
 
         end
 
         default:
             // LW
-            imm = {52'b0, inst[31:20]};
+            imm = {{20{inst[31]}}, inst[31:20]};
 
     endcase
 

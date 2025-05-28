@@ -30,7 +30,7 @@ always @(posedge clk, posedge reset)
         begin
 
         outAlu_jumpAdressOut <= outAlu_jumpAdress;
-        outMemOut <= outMem;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              outMemOut <= outMem;
         rdOut <= rd;
         EscRegOut <= EscReg;
         lwOut <= lw;

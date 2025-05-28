@@ -229,7 +229,7 @@ Forwarding forwarding(
 
     assign muxMemToReg = (lwWB == 0) ? outAlu_jumpAdressWB : outMemWB;
 
-    assign jumpTaked = (BranchMEM & outAluMEM != 32'b0) || (jumpMEM | jalrMEM);
+    assign jumpTaked = (BranchMEM & outAluMEM[0] != 1'b0) || (jumpMEM | jalrMEM);
 
     assign newPC = (jumpTaked == 0) ? (pcAdd4) : (jalrMEM == 0) ? immPcMEM : {outAluMEM[31:1], 1'b0};
 
