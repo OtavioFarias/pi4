@@ -1,6 +1,6 @@
 module ControlUnit(
     input  [31:0] inst,
-    output reg EscReg, EscMem, ulaImm, jump, Branch, lui, auiPc, jalr, lw,
+    output reg EscReg, EscMem, ulaImm, jump, Branch, lui, auiPc, jalr, lw, shamt,
     output reg [2:0] aluControl
 );
 
@@ -16,6 +16,7 @@ always @(*) begin
     auiPc       = 0;
     jalr        = 0;
     lw          = 0;
+    shamt       = 0;
 
     case (inst[6:0])
 
@@ -31,6 +32,7 @@ always @(*) begin
             auiPc = 0;
             jalr = 0;
             lw = 0;
+            shamt = 0;
 
         end
 
@@ -47,6 +49,7 @@ always @(*) begin
             auiPc = 1;
             jalr = 0;
             lw = 0;
+            shamt = 0;
 
         end
 
@@ -76,6 +79,7 @@ always @(*) begin
             auiPc = 0;
             jalr = 1;
             lw = 0;
+            shamt = 0;
 
         end
         7'b100011: begin
@@ -91,6 +95,7 @@ always @(*) begin
             auiPc = 0;
             jalr = 0;
             lw = 0;
+            shamt = 0;
 
         end
 
@@ -107,6 +112,7 @@ always @(*) begin
             Branch = 1;
             aluControl = 3'b010;
             lw = 0;
+            shamt = 0;
 
         end
 
@@ -123,6 +129,7 @@ always @(*) begin
             auiPc = 0;
             jalr = 0;
             lw = 1;
+            shamt = 0;
 
         end
 
@@ -139,6 +146,8 @@ always @(*) begin
             auiPc = 0;
             jalr = 0;
             lw = 0;
+
+            shamt = (inst[14:12] == 3'b101 | inst[14:12] == 3'b100) ? 1'b1 : 1'b0;
 
         end
 

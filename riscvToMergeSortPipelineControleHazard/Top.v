@@ -7,7 +7,7 @@ module Top(
 
     reg [31:0] pc;
     wire [31:0] inst;
-    wire EscReg, EscMem, ulaImm, lui, jump, Branch, auiPc, jalr, lw;
+    wire EscReg, EscMem, ulaImm, lui, jump, Branch, auiPc, jalr, lw, endAluShamt;
     wire jumpTaked;
     wire [31:0] muxAluB, muxAluA, muxMemToReg, muxAluLui, muxRs1, muxRs2;
     wire [31:0] imm, rs1, rs2, outAlu, outMem, valueMem, muxAlu_jumpAdress, pcAdd4;
@@ -70,6 +70,7 @@ ID_EX id_ex(
     .jalr(jalr),
     .lw(lw),
     .aluControl(aluControl),
+    .shamt(endAluShamt),
     .rs1Out(rs1EX),
     .rs2Out(rs2EX),
     .immOut(immEX),
@@ -86,6 +87,7 @@ ID_EX id_ex(
     .jalrOut(jalrEX),
     .lwOut(lwEX),
     .aluControlOut(aluControlEX),
+    .shamtOut(endAluShamtEX),
     .flush(jumpTaked),
     .stall(1'b0)
 
@@ -163,7 +165,8 @@ ControlUnit UC(
     .auiPc(auiPc),
     .jalr(jalr),
     .lw(lw),
-    .ulaImm(ulaImm)
+    .ulaImm(ulaImm),
+    .shamt(endAluShamt)
 
 );
 
@@ -230,7 +233,7 @@ Forwarding forwarding(
 
     assign muxAlu_jumpAdress = ((jumpMEM | jalrMEM) == 0) ? outAluMEM : pcAdd4MEM;
 
-    assign muxAluB = (forwardingRs2MEM) ? (lwMEM) ? outMem : outAluMEM : (forwardingRs2WB) ? muxMemToReg : (ulaImmEX) ? rs2EX : immEX;
+    assign muxAluB = (endAluShamtEX) ? rs2endEX : (forwardingRs2MEM) ? (lwMEM) ? outMem : outAluMEM : (forwardingRs2WB) ? muxMemToReg : (ulaImmEX) ? rs2EX : immEX;
 
     assign muxAluA = (forwardingRs1MEM) ? outAluMEM : (forwardingRs1WB) ? muxMemToReg : (auiPcEX) ? pcEX : rs1EX;
 
