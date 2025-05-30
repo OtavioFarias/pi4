@@ -1,14 +1,16 @@
 module Forwarding(
 
-    input [4:0] rs1, rs2,
-    input [4:0] rdEX, rdMEM, rdWB,
-    input EscRegEX, EscRegMEM, EscRegWB,
-    output forwardingRs1EX, forwardingRs2EX, forwardingRs1MEM, forwardingRs2MEM, forwardingRs1WB, forwardingRs2WB
+    input [4:0] rs1, rs2, rs1ID, rs2ID,
+    input [4:0] rdMEM, rdWB,
+    input EscRegMEM, EscRegWB, lw, imm,
+    output forwardingRs1WB, forwardingRs2WB, forwardingRs1MEM, forwardingRs2MEM, forwardingRs1ID, forwardingRs2ID
 
 );
 
-    assign forwardingRs1EX = ((rs1 == rdEX) & !EscRegEX) ? 1'b1 : 1'b0;
-    assign forwardingRs2EX = ((rs2 == rdEX) & !EscRegEX) ? 1'b1 : 1'b0;
+    wire forwardingRs1MEM, forwardingRs2MEM;
+
+    assign forwardingRs1ID = ((rs1ID == rdWB) & !EscRegWB) ? 1'b1 : 1'b0;
+    assign forwardingRs2ID = ((rs2ID == rdWB) & !EscRegWB) ? 1'b1 : 1'b0;
 
     assign forwardingRs1MEM = ((rs1 == rdMEM) & !EscRegMEM) ? 1'b1 : 1'b0;
     assign forwardingRs2MEM = ((rs2 == rdMEM) & !EscRegMEM) ? 1'b1 : 1'b0;

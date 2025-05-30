@@ -9,7 +9,7 @@ module Top(
     wire [31:0] inst;
     wire EscReg, EscMem, ulaImm, lui, jump, Branch, auiPc, jalr, lw;
     wire jumpTaked;
-    wire [31:0] muxAluB, muxAluA, muxMemToReg, muxAluLui;
+    wire [31:0] muxAluB, muxAluA, muxMemToReg, muxAluLui, muxRs1, muxRs2;
     wire [31:0] imm, rs1, rs2, outAlu, outMem, valueMem, muxAlu_jumpAdress, pcAdd4;
     wire [31:0] newPC;
     wire [2:0] aluControl;
@@ -17,7 +17,7 @@ module Top(
     wire [31:0] pcID, pcAdd4ID, instID;
 
     wire [31:0] rs1EX, rs2EX, immEX, pcEX, pcAdd4EX;
-    wire [4:0] rdEX;
+    wire [4:0] rdEX, rs1endEX, rs2endEX;
     wire EscRegEX, EscMemEX, ulaImmEX, jumpEX, BranchEX, luiEX, auiPcEX, jalrEX, lwEX;
     wire [2:0] aluControlEX;
 
@@ -29,8 +29,7 @@ module Top(
     wire [4:0] rdWB;
     wire EscRegWB, lwWB;
 
-    wire forwardingRs1EX, forwardingRs2EX, forwardingRs1MEM, forwardingRs2MEM, forwardingRs1WB, forwardingRs2WB;
-    wire [31:0] muxForwardingRs1, muxForwardingRs2;
+    wire forwardingRs1MEM, forwardingRs2MEM, forwardingRs1WB, forwardingRs2WB, forwardingRs1ID, forwardingRs2ID;
 
 IF_ID if_id(
 
@@ -42,7 +41,8 @@ IF_ID if_id(
     .pcOut(pcID),
     .pcAdd4Out(pcAdd4ID),
     .instOut(instID),
-    .stall(jumpTaked)
+    .flush(jumpTaked),
+    .stall(1'b0)
 
 );
 
@@ -50,8 +50,12 @@ ID_EX id_ex(
 
     .clk(clock),
     .reset(reset),
-    .rs1(muxForwardingRs1),
-    .rs2(muxForwardingRs2),
+    .rs1end(instID[19:15]),
+    .rs2end(instID[24:20]),
+    .rs1endOut(rs1endEX),
+    .rs2endOut(rs2endEX),
+    .rs1(muxRs1),
+    .rs2(muxRs2),
     .imm(imm),
     .rd(instID[11:7]),
     .pc(pcID),
@@ -82,7 +86,8 @@ ID_EX id_ex(
     .jalrOut(jalrEX),
     .lwOut(lwEX),
     .aluControlOut(aluControlEX),
-    .stall(jumpTaked)
+    .flush(jumpTaked),
+    .stall(1'b0)
 
 );
 
@@ -114,7 +119,7 @@ EX_MEM ex_mem(
     .jalrOut(jalrMEM),
     .lwOut(lwMEM),
     .immOut(immMEM),
-    .stall(jumpTaked)
+    .flush(jumpTaked)
 
 );
 
@@ -159,7 +164,8 @@ ControlUnit UC(
     .jalr(jalr),
     .lw(lw),
     .ulaImm(ulaImm)
-    );
+
+);
 
 ImmDecode DI(
 
@@ -203,37 +209,45 @@ RegisterBank Regs(
 
 Forwarding forwarding(
 
-    .rs1(instID[19:15]),
-    .rs2(instID[24:20]),
-    .rdEX(rdEX),
+    .rs1ID(instID[19:15]),
+    .rs2ID(instID[24:20]),
+    .rs1(rs1endEX),
+    .rs2(rs2endEX),
     .rdMEM(rdMEM),
     .rdWB(rdWB),
-    .EscRegEX(EscRegEX),
     .EscRegMEM(EscRegMEM),
     .EscRegWB(EscRegWB),
-    .forwardingRs1EX(forwardingRs1EX),
-    .forwardingRs2EX(forwardingRs2EX),
     .forwardingRs1MEM(forwardingRs1MEM),
     .forwardingRs2MEM(forwardingRs2MEM),
     .forwardingRs1WB(forwardingRs1WB),
-    .forwardingRs2WB(forwardingRs2WB)
+    .forwardingRs2WB(forwardingRs2WB),
+    .forwardingRs1ID(forwardingRs1ID),
+    .forwardingRs2ID(forwardingRs2ID),
+    .lw(lwMEM),
+    .imm(ulaImmEX)
 
 );
 
     assign muxAlu_jumpAdress = ((jumpMEM | jalrMEM) == 0) ? outAluMEM : pcAdd4MEM;
-    assign muxAluB = (ulaImmEX == 0) ? immEX : rs2EX;
-    assign muxAluA = (auiPcEX == 0) ? rs1EX : pcEX;
-    assign muxForwardingRs1 = (forwardingRs1EX == 0) ? (forwardingRs1MEM == 0) ? (forwardingRs1WB == 0) ? rs1 : muxMemToReg : outAluMEM : outAlu;
-    assign muxForwardingRs2 = (forwardingRs2EX == 0) ? (forwardingRs2MEM == 0) ? (forwardingRs2WB == 0) ? rs2 : muxMemToReg : outAluMEM : outAlu;
+
+    assign muxAluB = (forwardingRs2MEM) ? (lwMEM) ? outMem : outAluMEM : (forwardingRs2WB) ? muxMemToReg : (ulaImmEX) ? rs2EX : immEX;
+
+    assign muxAluA = (forwardingRs1MEM) ? outAluMEM : (forwardingRs1WB) ? muxMemToReg : (auiPcEX) ? pcEX : rs1EX;
+
     assign muxAluLui = (luiEX == 0) ? outAlu : immEX;
 
     assign muxMemToReg = (lwWB == 0) ? outAlu_jumpAdressWB : outMemWB;
 
-    assign jumpTaked = (BranchMEM & outAluMEM[0] != 1'b0) || (jumpMEM | jalrMEM);
+    assign jumpTaked = (BranchMEM & outAluMEM[0] != 1'b0) | (jumpMEM | jalrMEM);
 
+    //assign newPC = (stallForwarding) ? pc : (jumpTaked == 0) ? (pcAdd4) : (jalrMEM == 0) ? immPcMEM : {outAluMEM[31:1], 1'b0};
     assign newPC = (jumpTaked == 0) ? (pcAdd4) : (jalrMEM == 0) ? immPcMEM : {outAluMEM[31:1], 1'b0};
 
+
     assign pcAdd4 = pc + 4;
+
+    assign muxRs1 = (forwardingRs1ID) ? muxMemToReg : rs1;
+    assign muxRs2 = (forwardingRs2ID) ? muxMemToReg : rs2;
 
     always @(posedge clock, posedge reset)
     begin

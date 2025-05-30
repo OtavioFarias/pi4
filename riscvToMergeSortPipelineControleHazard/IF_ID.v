@@ -3,13 +3,13 @@ module IF_ID(
     input clk, reset,
     input [31:0] pc, pcAdd4, inst,
     output reg [31:0] pcOut, pcAdd4Out, instOut,
-    input stall
+    input flush, stall
 );
 
-always @(posedge clk, posedge reset)
+always @(posedge clk, posedge reset, posedge stall)
 
     begin
-    if (reset | stall)
+    if (reset | flush)
         begin
 
         pcOut <= 32'b0;
@@ -19,11 +19,11 @@ always @(posedge clk, posedge reset)
 
     else
         begin
-
-        pcOut <= pc;
-        pcAdd4Out <= pcAdd4;
-        instOut <= inst;
+        if(stall == 0)begin
+            pcOut <= pc;
+            pcAdd4Out <= pcAdd4;
+            instOut <= inst;
+            end
         end
-
     end
 endmodule
