@@ -110,7 +110,7 @@ always @(*) begin
             jump = 0;
             jalr = 0;
             Branch = 1;
-            aluControl = 3'b010;
+            aluControl = inst[14:12];
             lw = 0;
             shamt = 0;
 

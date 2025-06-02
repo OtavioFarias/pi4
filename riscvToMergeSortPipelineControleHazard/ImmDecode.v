@@ -47,7 +47,8 @@ always @(*)begin
 
         7'b10011: begin
             //                          SLLI                              SRLI, SRAI                              ADDI, SLTI
-            imm = (inst[14:12] == 001) ? {27'b0, inst[24:20]} : (inst[14:12] == 101) ? {27'b0, inst[24:20]} : {{20{inst[31]}}, inst[31:20]};
+            //imm = (inst[14:12] == 001) ? {27'b0, inst[24:20]} : (inst[14:12] == 100) ? {27'b0, inst[24:20]} : {{20{inst[31]}}, inst[31:20]};
+            imm = (inst[14:12] == 3'b000) ? {{20{inst[31]}}, inst[31:20]} : {27'b0, inst[24:20]};
 
         end
 
