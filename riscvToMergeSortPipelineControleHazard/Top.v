@@ -7,7 +7,7 @@ module Top(
 
     reg [31:0] pc;
     wire [31:0] inst;
-    wire EscReg, EscMem, ulaImm, lui, jump, Branch, auiPc, jalr, lw, endAluShamt;
+    wire EscReg, EscMem, ulaImm, lui, jump, blt, bge, auiPc, jalr, lw, endAluShamt;
     wire jumpTaked;
     wire [31:0] muxAluB, muxAluA, muxMemToReg, muxAluLui, muxRs1, muxRs2, muxRs2EX;
     wire [31:0] imm, rs1, rs2, outAlu, outMem, valueMem, muxAlu_jumpAdress, pcAdd4;
@@ -18,12 +18,12 @@ module Top(
 
     wire [31:0] rs1EX, rs2EX, immEX, pcEX, pcAdd4EX;
     wire [4:0] rdEX, rs1endEX, rs2endEX;
-    wire EscRegEX, EscMemEX, ulaImmEX, jumpEX, BranchEX, luiEX, auiPcEX, jalrEX, lwEX;
+    wire EscRegEX, EscMemEX, ulaImmEX, jumpEX, bltEX, bgeEX, luiEX, auiPcEX, jalrEX, lwEX;
     wire [2:0] aluControlEX;
 
     wire [31:0] rs2MEM, immPcMEM, pcAdd4MEM, outAluMEM, immMEM;
     wire [4:0] rdMEM;
-    wire EscRegMEM, EscMemMEM, jumpMEM, BranchMEM, jalrMEM, lwMEM;
+    wire EscRegMEM, EscMemMEM, jumpMEM, bltMEM, bgeMEM, jalrMEM, lwMEM;
 
     wire [31:0] outAlu_jumpAdressWB, outMemWB, immWB;
     wire [4:0] rdWB;
@@ -64,7 +64,8 @@ ID_EX id_ex(
     .EscMem(EscMem),
     .ulaImm(ulaImm),
     .jump(jump),
-    .Branch(Branch),
+    .blt(blt),
+    .bge(bge),
     .lui(lui),
     .auiPc(auiPc),
     .jalr(jalr),
@@ -81,7 +82,8 @@ ID_EX id_ex(
     .EscMemOut(EscMemEX),
     .ulaImmOut(ulaImmEX),
     .jumpOut(jumpEX),
-    .BranchOut(BranchEX),
+    .bltOut(bltEX),
+    .bgeOut(bgeEX),
     .luiOut(luiEX),
     .auiPcOut(auiPcEX),
     .jalrOut(jalrEX),
@@ -105,7 +107,8 @@ EX_MEM ex_mem(
     .EscReg(EscRegEX),
     .EscMem(EscMemEX),
     .jump(jumpEX),
-    .Branch(BranchEX),
+    .blt(bltEX),
+    .bge(bgeEX),
     .jalr(jalrEX),
     .lw(lwEX),
     .imm(immEX),
@@ -117,7 +120,8 @@ EX_MEM ex_mem(
     .EscRegOut(EscRegMEM),
     .EscMemOut(EscMemMEM),
     .jumpOut(jumpMEM),
-    .BranchOut(BranchMEM),
+    .bltOut(bltMEM),
+    .bgeOut(bgeMEM),
     .jalrOut(jalrMEM),
     .lwOut(lwMEM),
     .immOut(immMEM),
@@ -160,7 +164,8 @@ ControlUnit UC(
     .EscMem(EscMem),
     .lui(lui),
     .jump(jump),
-    .Branch(Branch),
+    .blt(blt),
+    .bge(bge),
     .aluControl(aluControl),
     .auiPc(auiPc),
     .jalr(jalr),
@@ -233,9 +238,7 @@ Forwarding forwarding(
 
     assign muxAlu_jumpAdress = ((jumpMEM | jalrMEM) == 0) ? outAluMEM : pcAdd4MEM;
 
-    assign muxAluB = (ulaImmEX == 0) ? immEX : (endAluShamtEX) ? rs2endEX : (forwardingRs2MEM) ? (lwMEM) ? outMem : outAluMEM : (forwardingRs2WB) ? muxMemToReg : rs2EX;
-
-    //assign muxAluB = (endAluShamtEX) ? rs2endEX : (forwardingRs2MEM) ? (lwMEM) ? outMem : outAluMEM : (forwardingRs2WB) ? muxMemToReg : (ulaImmEX) ? rs2EX : immEX;
+    assign muxAluB = (ulaImmEX == 0) ? immEX : (endAluShamtEX) ? rs2endEX : muxRs2EX;
 
     assign muxAluA = (forwardingRs1MEM) ? (lwMEM) ? outMem : outAluMEM : (forwardingRs1WB) ? muxMemToReg : (auiPcEX) ? pcEX : rs1EX;
 
@@ -243,9 +246,8 @@ Forwarding forwarding(
 
     assign muxMemToReg = (lwWB == 0) ? outAlu_jumpAdressWB : outMemWB;
 
-    assign jumpTaked = (BranchMEM & outAluMEM[0] != 1'b0) | (jumpMEM | jalrMEM);
+    assign jumpTaked = ((bgeMEM & outAluMEM == 1'b0) | (bltMEM & outAluMEM == 1'b1)) | (jumpMEM | jalrMEM);
 
-    //assign newPC = (stallForwarding) ? pc : (jumpTaked == 0) ? (pcAdd4) : (jalrMEM == 0) ? immPcMEM : {outAluMEM[31:1], 1'b0};
     assign newPC = (jumpTaked == 0) ? (pcAdd4) : (jalrMEM == 0) ? immPcMEM : {outAluMEM[31:1], 1'b0};
 
 

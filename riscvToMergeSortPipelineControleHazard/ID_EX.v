@@ -3,11 +3,11 @@ module ID_EX(
     input clk, reset,
     input [31:0] rs1, rs2, imm, pc, pcAdd4,
     input [4:0] rd, rs1end, rs2end,
-    input EscReg, EscMem, ulaImm, jump, Branch, lui, auiPc, jalr, lw, shamt,
+    input EscReg, EscMem, ulaImm, jump, blt, bge, lui, auiPc, jalr, lw, shamt,
     input [2:0] aluControl,
     output reg [31:0] rs1Out, rs2Out, immOut, pcOut, pcAdd4Out,
     output reg [4:0] rdOut, rs1endOut, rs2endOut,
-    output reg EscRegOut, EscMemOut, ulaImmOut, jumpOut, BranchOut, luiOut, auiPcOut, jalrOut, lwOut, shamtOut,
+    output reg EscRegOut, EscMemOut, ulaImmOut, jumpOut, bltOut, bgeOut, luiOut, auiPcOut, jalrOut, lwOut, shamtOut,
     output reg [2:0] aluControlOut,
     input flush, stall
 );
@@ -28,7 +28,8 @@ always @(posedge clk, posedge reset, posedge flush, posedge stall)
         EscMemOut <= 1'b0;
         ulaImmOut <= 1'b0;
         jumpOut <= 1'b0;
-        BranchOut <= 1'b0;
+        bltOut <= 1'b0;
+        bgeOut <= 1'b0;
         luiOut <= 1'b0;
         auiPcOut <= 1'b0;
         jalrOut <= 1'b0;
@@ -54,7 +55,8 @@ always @(posedge clk, posedge reset, posedge flush, posedge stall)
         EscMemOut <= EscMem;
         ulaImmOut <= ulaImm;
         jumpOut <= jump;
-        BranchOut <= Branch;
+        bltOut <= blt;
+        bgeOut <= bge;
         luiOut <= lui;
         auiPcOut <= auiPc;
         jalrOut <= jalr;

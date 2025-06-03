@@ -3,10 +3,10 @@ module EX_MEM(
     input clk, reset,
     input [31:0] rs2, immPc, pcAdd4, outAlu, imm,
     input [4:0] rd,
-    input EscReg, EscMem, jump, Branch, jalr, lw,
+    input EscReg, EscMem, jump, blt, bge, jalr, lw,
     output reg [31:0] rs2Out, immPcOut, pcAdd4Out, outAluOut, immOut,
     output reg [4:0] rdOut,
-    output reg EscRegOut, EscMemOut, jumpOut, BranchOut, jalrOut, lwOut,
+    output reg EscRegOut, EscMemOut, jumpOut, bltOut, bgeOut, jalrOut, lwOut,
     input flush
 
 );
@@ -25,7 +25,8 @@ always @(posedge clk, posedge reset)
         EscRegOut <= 1'b1;
         EscMemOut <= 1'b0;
         jumpOut <= 1'b0;
-        BranchOut <= 1'b0;
+        bltOut <= 1'b0;
+        bgeOut <= 1'b0;
         jalrOut <= 1'b0;
         lwOut <= 1'b0;
         immOut <= 32'b0;
@@ -43,7 +44,8 @@ always @(posedge clk, posedge reset)
         EscRegOut <= EscReg;
         EscMemOut <= EscMem;
         jumpOut <= jump;
-        BranchOut <= Branch;
+        bltOut <= blt;
+        bgeOut <= bge;
         jalrOut <= jalr;
         lwOut <= lw;
         immOut <= imm;

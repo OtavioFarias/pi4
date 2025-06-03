@@ -14,7 +14,7 @@ module Alu(
                     (control == 'b101) ? ($unsigned(inputA) >>> inputB) : //srl
                     (control == 'b010) ? ($signed(inputA) >>> inputB) : //sra
                     (control == 'b011) ? (inputA - inputB) : //sub
-                                        (($signed(inputA) < $signed(inputB)) ? 1'b0 : 1'b1);
+                                        32'b0;
 
                                         // 32'b0; //default
 

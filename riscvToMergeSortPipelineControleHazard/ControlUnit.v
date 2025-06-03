@@ -1,6 +1,6 @@
 module ControlUnit(
     input  [31:0] inst,
-    output reg EscReg, EscMem, ulaImm, jump, Branch, lui, auiPc, jalr, lw, shamt,
+    output reg EscReg, EscMem, ulaImm, jump, blt, bge, lui, auiPc, jalr, lw, shamt,
     output reg [2:0] aluControl
 );
 
@@ -10,7 +10,8 @@ always @(*) begin
     EscMem      = 0;
     ulaImm      = 0;
     jump        = 0;
-    Branch      = 0;
+    blt         = 0;
+    bge         = 0;
     lui         = 0;
     aluControl  = 'b000;
     auiPc       = 0;
@@ -26,7 +27,8 @@ always @(*) begin
             EscMem = 0;
             ulaImm = 1; //#
             jump = 0;
-            Branch= 0;
+            blt = 0;
+            bge = 0;
             lui = 0;
             aluControl = inst[14:12];
             auiPc = 0;
@@ -43,7 +45,8 @@ always @(*) begin
             EscMem = 0;
             ulaImm = 0; //#
             jump = 0;
-            Branch = 0;
+            blt = 0;
+            bge = 0;
             lui = 0;
             aluControl = 000;
             auiPc = 1;
@@ -73,7 +76,6 @@ always @(*) begin
             EscMem = 0;
             ulaImm = 0; //#
             jump = 0;
-            Branch = 0;
             lui = 0;
             aluControl = inst[14:12];
             auiPc = 0;
@@ -89,7 +91,8 @@ always @(*) begin
             EscMem = 1;
             ulaImm = 0; //#
             jump = 0;
-            Branch = 0;
+            blt = 0;
+            bge = 0;
             lui = 0;
             aluControl = 000;
             auiPc = 0;
@@ -109,10 +112,27 @@ always @(*) begin
             auiPc = 0;
             jump = 0;
             jalr = 0;
-            Branch = 1;
-            aluControl = inst[14:12];
+            aluControl = 3'b100;
             lw = 0;
             shamt = 0;
+
+            case(inst[12])
+
+                1'b0: begin
+
+                    blt = 1'b1;
+                    bge = 1'b0;
+
+                end
+
+                1'b1: begin
+
+                    blt = 1'b0;
+                    bge = 1'b1;
+
+                end
+
+            endcase
 
         end
 
@@ -123,7 +143,8 @@ always @(*) begin
             EscMem = 0;
             ulaImm = 0; //#
             jump = 0;
-            Branch = 0;
+            blt = 0;
+            bge = 0;
             lui = 0;
             aluControl = 000;
             auiPc = 0;
@@ -140,7 +161,8 @@ always @(*) begin
             EscMem = 0;
             ulaImm = 0; //#
             jump = 0;
-            Branch = 0;
+            blt = 0;
+            bge = 0;
             lui = 0;
             aluControl = inst[14:12];
             auiPc = 0;
@@ -158,7 +180,8 @@ always @(*) begin
             EscMem = 0;
             ulaImm = 0;
             jump = 0;
-            Branch = 0;
+            blt = 0;
+            bge = 0;
             lui = 1;
             auiPc = 0;
             jalr = 0;
@@ -172,7 +195,8 @@ always @(*) begin
             EscReg = 1; //#
             EscMem = 0;
             jump = 0;
-            Branch = 0;
+            blt = 0;
+            bge = 0;
             jalr = 0;
             lw = 0;
 
