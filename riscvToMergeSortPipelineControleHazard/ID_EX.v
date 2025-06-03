@@ -3,11 +3,11 @@ module ID_EX(
     input clk, reset,
     input [31:0] rs1, rs2, imm, pc, pcAdd4,
     input [4:0] rd, rs1end, rs2end,
-    input EscReg, EscMem, ulaImm, jump, blt, bge, lui, auiPc, jalr, lw, shamt,
+    input EscReg, EscMem, ulaImm, jump, blt, bge, lui, auiPc, jalr, lw,
     input [2:0] aluControl,
     output reg [31:0] rs1Out, rs2Out, immOut, pcOut, pcAdd4Out,
     output reg [4:0] rdOut, rs1endOut, rs2endOut,
-    output reg EscRegOut, EscMemOut, ulaImmOut, jumpOut, bltOut, bgeOut, luiOut, auiPcOut, jalrOut, lwOut, shamtOut,
+    output reg EscRegOut, EscMemOut, ulaImmOut, jumpOut, bltOut, bgeOut, luiOut, auiPcOut, jalrOut, lwOut,
     output reg [2:0] aluControlOut,
     input flush, stall
 );
@@ -37,7 +37,6 @@ always @(posedge clk, posedge reset, posedge flush, posedge stall)
         aluControlOut <= 3'b0;
         rs1endOut <=  5'b0;
         rs2endOut <= 5'b0;
-        shamtOut <= 1'b0;
 
         end
 
@@ -64,7 +63,6 @@ always @(posedge clk, posedge reset, posedge flush, posedge stall)
         aluControlOut <= aluControl;
         rs1endOut <= rs1end;
         rs2endOut <= rs2end;
-        shamtOut <= shamt;
 
             end
 
