@@ -7,8 +7,6 @@ module Forwarding(
 
 );
 
-    wire forwardingRs1MEM, forwardingRs2MEM;
-
     assign forwardingRs1ID = ((rs1ID == rdWB) & !EscRegWB) ? 1'b1 : 1'b0;
     assign forwardingRs2ID = ((rs2ID == rdWB) & !EscRegWB) ? 1'b1 : 1'b0;
 

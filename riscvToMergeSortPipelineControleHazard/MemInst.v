@@ -13,7 +13,7 @@ module MemInst(
 
     initial begin
 
-        $readmemb("instNelementos.txt", inst);
+        $readmemb("inst4elementos.txt", inst);
 
     end
 
