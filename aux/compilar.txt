@@ -1,0 +1,7 @@
+riscv64-unknown-elf-gcc -S -O2 -march=rv32i -mabi=ilp32 -o mergesort.s mergesort.c
+riscv64-unknown-elf-as mergesort.s -o mergesort.o
+riscv64-unknown-elf-ld mergesort.o -o mergesort.elf
+
+riscv64-unknown-elf-gcc -S file.c -o file.s      # gera assembly a partir de C
+riscv64-unknown-elf-as file.s -o file.o          # monta
+riscv64-unknown-elf-objdump -d file.o > final.s  # extrai assembly final
