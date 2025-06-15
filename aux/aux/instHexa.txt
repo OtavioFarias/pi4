@@ -1,0 +1,26 @@
+fb010113          	addi	sp,sp,-80
+04112623          	sw	ra,76(sp)
+04812423          	sw	s0,72(sp)
+05010413          	addi	s0,sp,80
+000007b7          	lui	a5,0x0
+00078713          	mv	a4,a5
+fb440793          	addi	a5,s0,-76
+00070693          	mv	a3,a4
+03c00713          	li	a4,60
+00070613          	mv	a2,a4
+00068593          	mv	a1,a3
+00078513          	mv	a0,a5
+00000097          	auipc	ra,0x0
+000080e7          	jalr	ra # 448 <main+0x30>
+fb440793          	addi	a5,s0,-76
+01400613          	li	a2,20
+00000593          	li	a1,0
+00078513          	mv	a0,a5
+00000097          	auipc	ra,0x0
+000080e7          	jalr	ra # 460 <main+0x48>
+00000793          	li	a5,0
+00078513          	mv	a0,a5
+04c12083          	lw	ra,76(sp)
+04812403          	lw	s0,72(sp)
+05010113          	addi	sp,sp,80
+00008067          	ret
